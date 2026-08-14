@@ -5,7 +5,7 @@
 ## 目录结构
 
 ```
-plugin/
+MTD/
 ├── desktop-app/   # Electron 桌面应用（界面 + 主进程）
 ├── server/        # Markdown/LaTeX → DOCX 转换服务（基于 Pandoc）
 └── icons/         # 应用图标
