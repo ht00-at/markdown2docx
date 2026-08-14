@@ -1,0 +1,14 @@
+const AdmZip = require('adm-zip');
+const path = require('path');
+const refPath = path.join(__dirname, '..', 'reference', 'reference.docx');
+const z = new AdmZip(refPath);
+const s = z.readAsText('word/styles.xml');
+const fontMatches = s.match(/w:eastAsia="[^"]+"/g) || [];
+const asciiMatches = s.match(/w:ascii="[^"]+"/g) || [];
+const szMatches = s.match(/w:sz w:val="\d+"/g) || [];
+console.log('--- Font settings ---');
+[...new Set(fontMatches)].forEach(m => console.log('  ' + m));
+console.log('--- ASCII fonts ---');
+[...new Set(asciiMatches)].forEach(m => console.log('  ' + m));
+console.log('--- Font sizes (half-pt) ---');
+[...new Set(szMatches)].forEach(m => console.log('  ' + m));

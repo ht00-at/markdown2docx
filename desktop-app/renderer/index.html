@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTD - Markdown 转 Word</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- ===== 侧边栏 ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <svg width="32" height="32" viewBox="0 0 48 48" class="sidebar-logo">
+                    <defs>
+                        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0" stop-color="#6366F1"/>
+                            <stop offset="1" stop-color="#A855F7"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="48" height="48" rx="10" fill="url(#bg)"/>
+                    <rect x="12" y="12" width="24" height="29.76" fill="#FFFFFF"/>
+                    <polygon points="30,12 36,18 30,18" fill="#E4E4EC"/>
+                    <text x="24" y="27" font-family="'Segoe UI',Arial" font-size="13" font-weight="bold" fill="#6D28D9" text-anchor="middle">fx</text>
+                    <line x1="15.4" y1="31" x2="32.6" y2="31" stroke="#6D28D9" stroke-width="0.8" opacity="0.7"/>
+                    <line x1="15.4" y1="34.5" x2="25.9" y2="34.5" stroke="#6D28D9" stroke-width="0.8" opacity="0.7"/>
+                </svg>
+                <div class="sidebar-title">
+                    <h1>MTD</h1>
+                    <span class="sidebar-subtitle">Markdown 转 Word</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-view="convert">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+                    <span>转换</span>
+                </button>
+                <button class="nav-item" data-view="history">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>历史记录</span>
+                </button>
+                <button class="nav-item" data-view="status">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    <span>引擎状态</span>
+                </button>
+                <button class="nav-item" data-view="settings">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    <span>设置</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-status">
+                    <span class="status-dot" id="pandocDotSidebar"></span>
+                    <span id="pandocStatusSidebar">检查中</span>
+                </div>
+                <span class="sidebar-version" id="appVersion">v1.0.0</span>
+            </div>
+        </aside>
+
+        <!-- ===== 主内容区 ===== -->
+        <main class="main-content">
+            <!-- ── 转换页面 ── -->
+            <section class="view active" id="view-convert">
+                <div class="view-header">
+                    <h2>Markdown 转 Word</h2>
+                    <p class="view-desc">粘贴 Markdown 文本或上传 .md 文件，一键转换为 Word 文档</p>
+                </div>
+
+                <!-- 文件上传区 -->
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-inner" id="uploadInner">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        <div class="upload-text">
+                            <span class="upload-title">上传 Markdown 文件</span>
+                            <span class="upload-hint">点击选择或拖拽 .md / .txt 文件到此处</span>
+                        </div>
+                    </div>
+                    <input type="file" id="fileInput" accept=".md,.markdown,.txt" style="display:none;">
+                </div>
+
+                <!-- 转换表单 -->
+                <div class="convert-form">
+                    <div class="form-group">
+                        <label>文档标题</label>
+                        <input type="text" id="docTitle" placeholder="输入文档标题" value="AI对话导出">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Markdown 内容</label>
+                        <textarea id="markdownInput" placeholder="在此粘贴 Markdown 格式文本...&#10;&#10;支持：标题、段落、列表、表格、数学公式 ($...$ / $$...$$)、代码块、图片引用"></textarea>
+                        <div class="textarea-info">
+                            <span id="charCount">0 字符</span>
+                            <span id="fileNameDisplay" class="file-name-display" style="display:none;"></span>
+                        </div>
+                    </div>
+
+                    <!-- 转换选项 -->
+                    <div class="options-section">
+                        <button class="options-toggle" id="optionsToggle">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                            <span>转换选项</span>
+                        </button>
+                        <div class="options-content" id="optionsContent">
+                            <div class="options-grid">
+                                <div class="option-group">
+                                    <label class="option-label">表格样式</label>
+                                    <div class="radio-row">
+                                        <label class="radio-pill">
+                                            <input type="radio" name="tableStyle" value="three-line" checked>
+                                            <span>三线表</span>
+                                        </label>
+                                        <label class="radio-pill">
+                                            <input type="radio" name="tableStyle" value="bordered">
+                                            <span>黑色框线</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="option-group">
+                                    <label class="option-label">格式选项</label>
+                                    <div class="checkbox-list">
+                                        <label class="checkbox-pill">
+                                            <input type="checkbox" id="optRemoveHr">
+                                            <span>移除分隔线</span>
+                                        </label>
+                                        <label class="checkbox-pill">
+                                            <input type="checkbox" id="optHardBreaks">
+                                            <span>硬换行</span>
+                                        </label>
+                                        <label class="checkbox-pill">
+                                            <input type="checkbox" id="optDisableNumbering">
+                                            <span>禁用自动编号</span>
+                                        </label>
+                                        <label class="checkbox-pill">
+                                            <input type="checkbox" id="optToc">
+                                            <span>生成目录</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 转换注释（可选） -->
+                            <div class="option-group" style="margin-top:12px;">
+                                <label class="option-label">转换注释（可选）</label>
+                                <input type="text" id="convertNote" class="note-input" placeholder="为本次转换添加备注，方便日后查找">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="convert-actions">
+                        <button class="btn btn-primary btn-lg" id="btnConvert">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+                            <span>转换为 Word</span>
+                        </button>
+                        <button class="btn btn-secondary" id="btnClear">清空</button>
+                    </div>
+                </div>
+
+                <!-- 转换结果 -->
+                <div class="result-banner" id="resultBanner" style="display:none;"></div>
+            </section>
+
+            <!-- ── 历史记录页面 ── -->
+            <section class="view" id="view-history">
+                <div class="view-header">
+                    <h2>转换历史</h2>
+                    <p class="view-desc">查看过往的转换记录，可添加注释方便日后查找</p>
+                </div>
+                <div class="history-toolbar">
+                    <span class="history-count" id="historyCount">共 0 条记录</span>
+                    <button class="btn btn-outline btn-sm" id="btnClearHistory">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        清空全部
+                    </button>
+                </div>
+                <div class="history-list" id="historyList">
+                    <div class="empty-state">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <p>暂无转换记录</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── 引擎状态页面 ── -->
+            <section class="view" id="view-status">
+                <div class="view-header">
+                    <h2>引擎状态</h2>
+                    <p class="view-desc">查看 Pandoc 转换引擎的安装状态和版本信息</p>
+                </div>
+                <div class="status-cards">
+                    <div class="status-card" id="pandocCard">
+                        <div class="status-card-header">
+                            <div class="status-card-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            </div>
+                            <div>
+                                <h3>Pandoc</h3>
+                                <span class="badge" id="pandocBadge">检查中...</span>
+                            </div>
+                        </div>
+                        <div class="status-card-body">
+                            <div class="info-row">
+                                <span class="info-label">状态</span>
+                                <span class="info-value">
+                                    <span class="status-dot" id="pandocDot"></span>
+                                    <span id="pandocStatusText">检查中...</span>
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">版本</span>
+                                <span class="info-value mono" id="pandocVersion">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">路径</span>
+                                <span class="info-value mono path" id="pandocPath">-</span>
+                            </div>
+                        </div>
+                        <div class="status-card-actions">
+                            <button class="btn btn-secondary btn-sm" id="btnCheckPandoc">重新检测</button>
+                            <button class="btn btn-outline btn-sm" id="btnInstallPandoc">下载 Pandoc</button>
+                        </div>
+                    </div>
+
+                    <div class="status-card info-card">
+                        <div class="status-card-header">
+                            <div class="status-card-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                            </div>
+                            <div>
+                                <h3>关于 Pandoc</h3>
+                            </div>
+                        </div>
+                        <div class="status-card-body">
+                            <p class="info-text">Pandoc 是一款通用的文档转换工具，MTD 使用它将 Markdown 转换为 Word 文档。</p>
+                            <p class="info-text">如果未安装 Pandoc，请点击「下载 Pandoc」前往官网下载安装。安装后点击「重新检测」即可。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── 设置页面 ── -->
+            <section class="view" id="view-settings">
+                <div class="view-header">
+                    <h2>应用设置</h2>
+                    <p class="view-desc">配置 MTD 桌面应用的行为选项</p>
+                </div>
+                <div class="settings-cards">
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <h3>通用设置</h3>
+                        </div>
+                        <div class="settings-list">
+                            <label class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-title">开机自启动</span>
+                                    <span class="setting-desc">系统开机时自动启动 MTD</span>
+                                </div>
+                                <div class="toggle">
+                                    <input type="checkbox" id="autoLaunchToggle">
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </label>
+                            <label class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-title">关闭窗口时最小化</span>
+                                    <span class="setting-desc">点击关闭按钮时隐藏到系统托盘</span>
+                                </div>
+                                <div class="toggle">
+                                    <input type="checkbox" id="minimizeToggle" checked>
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 字体设置 -->
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <h3>文档字体设置</h3>
+                            <label class="toggle" style="margin-left:auto;">
+                                <input type="checkbox" id="fontEnabledToggle">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-list" id="fontSettingsBody">
+                            <!-- 中文字体 -->
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-title">中文字体</span>
+                                    <span class="setting-desc">文档中中文内容使用的字体</span>
+                                </div>
+                                <select id="fontFamilySelect" class="font-select">
+                                    <option value="宋体">宋体</option>
+                                    <option value="黑体">黑体</option>
+                                    <option value="楷体">楷体</option>
+                                    <option value="仿宋">仿宋</option>
+                                    <option value="微软雅黑">微软雅黑</option>
+                                </select>
+                            </div>
+
+                            <!-- 英文字体 -->
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-title">英文字体</span>
+                                    <span class="setting-desc">文档中英文和数字使用的字体</span>
+                                </div>
+                                <select id="fontFamilyEnSelect" class="font-select">
+                                    <option value="Times New Roman">Times New Roman</option>
+                                    <option value="Arial">Arial</option>
+                                    <option value="Calibri">Calibri</option>
+                                    <option value="Cambria">Cambria</option>
+                                    <option value="Courier New">Courier New</option>
+                                    <option value="Georgia">Georgia</option>
+                                </select>
+                            </div>
+
+                            <!-- 正文字号 -->
+                            <div class="font-size-row">
+                                <label class="font-size-label">正文</label>
+                                <div class="font-size-input">
+                                    <input type="number" id="bodySizeInput" min="6" max="72" value="12">
+                                    <span class="font-size-unit">pt</span>
+                                </div>
+                            </div>
+
+                            <!-- 标题字号 -->
+                            <div class="font-size-section-title">标题字号</div>
+                            <div class="font-size-grid">
+                                <div class="font-size-row">
+                                    <label class="font-size-label">H1 一级标题</label>
+                                    <div class="font-size-input">
+                                        <input type="number" id="h1SizeInput" min="6" max="72" value="22">
+                                        <span class="font-size-unit">pt</span>
+                                    </div>
+                                </div>
+                                <div class="font-size-row">
+                                    <label class="font-size-label">H2 二级标题</label>
+                                    <div class="font-size-input">
+                                        <input type="number" id="h2SizeInput" min="6" max="72" value="16">
+                                        <span class="font-size-unit">pt</span>
+                                    </div>
+                                </div>
+                                <div class="font-size-row">
+                                    <label class="font-size-label">H3 三级标题</label>
+                                    <div class="font-size-input">
+                                        <input type="number" id="h3SizeInput" min="6" max="72" value="14">
+                                        <span class="font-size-unit">pt</span>
+                                    </div>
+                                </div>
+                                <div class="font-size-row">
+                                    <label class="font-size-label">H4 四级标题</label>
+                                    <div class="font-size-input">
+                                        <input type="number" id="h4SizeInput" min="6" max="72" value="13">
+                                        <span class="font-size-unit">pt</span>
+                                    </div>
+                                </div>
+                                <div class="font-size-row">
+                                    <label class="font-size-label">H5 五级标题</label>
+                                    <div class="font-size-input">
+                                        <input type="number" id="h5SizeInput" min="6" max="72" value="12">
+                                        <span class="font-size-unit">pt</span>
+                                    </div>
+                                </div>
+                                <div class="font-size-row">
+                                    <label class="font-size-label">H6 六级标题</label>
+                                    <div class="font-size-input">
+                                        <input type="number" id="h6SizeInput" min="6" max="72" value="12">
+                                        <span class="font-size-unit">pt</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 操作按钮 -->
+                            <div class="font-actions">
+                                <button class="btn btn-primary btn-sm" id="btnSaveFontSettings">保存设置</button>
+                                <button class="btn btn-outline btn-sm" id="btnResetFontSettings">恢复默认</button>
+                            </div>
+                            <p class="font-hint">设置仅对新生成的文档生效，关闭开关后使用 Pandoc 默认样式</p>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <h3>关于应用</h3>
+                        </div>
+                        <div class="settings-list">
+                            <div class="info-row">
+                                <span class="info-label">应用名称</span>
+                                <span class="info-value">MTD</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">版本</span>
+                                <span class="info-value mono" id="aboutVersion">1.0.0</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">描述</span>
+                                <span class="info-value">Markdown 转 Word 文档工具</span>
+                            </div>
+                        </div>
+                        <p class="copyright">MTD - 支持可编辑公式和表格样式的文档转换工具</p>
+                    </div>
+
+                    <!-- 依赖信息 -->
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <h3>依赖信息</h3>
+                            <button class="btn btn-outline btn-sm" id="btnRefreshDeps" style="margin-left:auto;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                                刷新
+                            </button>
+                        </div>
+
+                        <!-- 运行环境 -->
+                        <div class="dep-section">
+                            <div class="dep-section-title">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                                运行环境
+                            </div>
+                            <div class="dep-table" id="depRuntime">
+                                <div class="dep-loading">加载中...</div>
+                            </div>
+                        </div>
+
+                        <!-- Pandoc -->
+                        <div class="dep-section">
+                            <div class="dep-section-title">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                转换引擎 (Pandoc)
+                            </div>
+                            <div class="dep-table" id="depPandoc">
+                                <div class="dep-loading">加载中...</div>
+                            </div>
+                        </div>
+
+                        <!-- 系统信息 -->
+                        <div class="dep-section">
+                            <div class="dep-section-title">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                                系统信息
+                            </div>
+                            <div class="dep-table" id="depSystem">
+                                <div class="dep-loading">加载中...</div>
+                            </div>
+                        </div>
+
+                        <!-- NPM 包 -->
+                        <div class="dep-section">
+                            <div class="dep-section-title">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                                NPM 依赖包
+                            </div>
+                            <div class="dep-table" id="depNpm">
+                                <div class="dep-loading">加载中...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 底部状态栏 -->
+            <footer class="footer">
+                <span id="footerText">就绪</span>
+            </footer>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
